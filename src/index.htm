@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Soccer AI</title>
+    <script src="engine.js"></script>
+    <script src="player.js"></script>
+</head>
+<body>
+    <canvas id="field"></canvas>
+    <script>
+        var engine = new Engine();
+        engine.setCanvas(document.getElementById('field'));
+        engine.setPlayer1(Player);
+        engine.setPlayer2(Player);
+
+        function step(timestamp) {
+            engine.drawFrame();
+            if (!engine.isDone())
+                window.requestAnimationFrame(step);
+        }
+        window.requestAnimationFrame(step);
+    </script>
+</body>
+</html>
