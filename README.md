@@ -25,9 +25,9 @@ player.message(id, data)
 
 The other main component is the `player.js` file. Each competitor creates their 
 own `player` object which gets loaded into the engine. Several instances of the 
-each competitors `player` object are created, one for each player on that 
-competitor's team, and each instance is assigned an unique id. The `player` 
-object can use that id to send messages to other players on their team.
+each competitors `player` object are created by the engine, one for each player 
+on that competitor's team, and each instance is assigned an unique id. The id 
+can be used to send messages to other players on the team.
 
 Every time the frame changes, each instance of the `player` is examined and the 
 `player.action` method is called. State information containing the location of 
