@@ -89,8 +89,8 @@ function Engine() {
      * the time.
      */
     function drawFrame() {
-        var goal = drawField();
-        var state = computeState(goal);
+        var goal = updateView();
+        var state = currentState(goal);
         simulateStep(state);
         time++;
     }
@@ -99,7 +99,7 @@ function Engine() {
      * Draw the background, players, and goals. Return an object describing
      * the location of the goals.
      */
-    function drawField() {
+    function updateView() {
         // fill background
         ctx.fillStyle = "#009900";
         ctx.fillRect(0, 0, FIELD_WIDTH, FIELD_HEIGHT);
@@ -163,9 +163,12 @@ function Engine() {
     /**
      * Compute the state of the game using the location of the goals.
      */
-    function computeState(goal) {
+    function currentState(goal) {
         return {
-            time: time
+            time: time,
+            goal: goal,
+            team1: team1,
+            team2: team2
         }
     }
 
@@ -175,23 +178,48 @@ function Engine() {
      */
     function simulateStep(state) {
         for (var p = 0; p < NUM_PLAYER; p++) {
-            var vector = false;
-            vector = team1[p].player.action(state);
+            var vector = team1[p].player.action(state);
+
             team1[p].x += team1[p].vx;
+            if (team1[p].x < 0 + PLAYER_RADIUS)
+                team1[p].x = 0 + PLAYER_RADIUS;
+            if (team1[p].x > FIELD_WIDTH - PLAYER_RADIUS)
+                team1[p].x = FIELD_WIDTH - PLAYER_RADIUS;
+
             team1[p].y += team1[p].vy;
+            if (team1[p].y < 0 + PLAYER_RADIUS)
+                team1[p].y = 0 + PLAYER_RADIUS;
+            if (team1[p].y > FIELD_HEIGHT - PLAYER_RADIUS)
+                team1[p].y = FIELD_HEIGHT - PLAYER_RADIUS;
+
             team1[p].vx += vector.x;
             if (Math.abs(team1[p].vx) > MAX_SPEED)
                 team1[p].vx = MAX_SPEED*team1[p].vx/Math.abs(team1[p].vx);
+
             team1[p].vy += vector.y;
             if (Math.abs(team1[p].vy) > MAX_SPEED)
                 team1[p].vy = MAX_SPEED*team1[p].vy/Math.abs(team1[p].vy);
+        }
 
-            vector = team2[p].player.action(state);
+        for (var p = 0; p < NUM_PLAYER; p++) {
+            var vector = team2[p].player.action(state);
+
             team2[p].x += team2[p].vx;
+            if (team2[p].x < 0 + PLAYER_RADIUS)
+                team2[p].x = 0 + PLAYER_RADIUS;
+            if (team2[p].x > FIELD_WIDTH - PLAYER_RADIUS)
+                team2[p].x = FIELD_WIDTH - PLAYER_RADIUS;
+
             team2[p].y += team2[p].vy;
+            if (team2[p].y < 0 + PLAYER_RADIUS)
+                team2[p].y = 0 + PLAYER_RADIUS;
+            if (team2[p].y > FIELD_HEIGHT - PLAYER_RADIUS)
+                team2[p].y = FIELD_HEIGHT - PLAYER_RADIUS;
+
             team2[p].vx += vector.x;
             if (Math.abs(team2[p].vx) > MAX_SPEED)
                 team2[p].vx = MAX_SPEED*team2[p].vx/Math.abs(team2[p].vx);
+
             team2[p].vy += vector.y;
             if (Math.abs(team2[p].vy) > MAX_SPEED)
                 team2[p].vy = MAX_SPEED*team2[p].vy/Math.abs(team2[p].vy);
