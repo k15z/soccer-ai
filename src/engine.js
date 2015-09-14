@@ -26,12 +26,13 @@ function Engine() {
     var FIELD_WIDTH = 1100;
     var FIELD_HEIGHT = 700;
     var PLAYER_RADIUS = 25;
+    var SOCCER_RADIUS = 15;
     
+    var time = 0;
     var cvs = false;
     var ctx = false;
-    var team1 = [];
-    var team2 = [];
-    var time = 0;
+    var team1 = [], team2 = [];
+    var ball = {x: FIELD_WIDTH/2, y: FIELD_HEIGHT/2};
     
     /**
      * This function prepares the canvas by setting the width and height and 
@@ -123,6 +124,13 @@ function Engine() {
         ctx.strokeRect(0 - LINE_WIDTH, FIELD_HEIGHT/2 - GOAL_HEIGHT, GOAL_HEIGHT, GOAL_HEIGHT*2);
         ctx.strokeRect(FIELD_WIDTH - GOAL_HEIGHT + LINE_WIDTH, FIELD_HEIGHT/2 - GOAL_HEIGHT, GOAL_HEIGHT, GOAL_HEIGHT*2);
 
+        // draw ball
+        ctx.fillStyle = "black";
+        ctx.beginPath();
+            ctx.arc(ball.x, ball.y, SOCCER_RADIUS, 0, Math.PI*2);
+            ctx.fill();
+        ctx.closePath();
+
         // draw players
         ctx.fillStyle = "deepskyblue";
         for (var p = 0; p < NUM_PLAYER; p++) {
@@ -177,53 +185,29 @@ function Engine() {
      * Apply the returned acceleration vector.
      */
     function simulateStep(state) {
-        for (var p = 0; p < NUM_PLAYER; p++) {
-            var vector = team1[p].player.action(state);
+        // calculate new location/velocity
+        function kinematics(team) {
+            for (var p = 0; p < NUM_PLAYER; p++) {
+                var accel = team[p].player.action(state);
+                team[p].x += team[p].vx;
+                team[p].y += team[p].vy;
 
-            team1[p].x += team1[p].vx;
-            if (team1[p].x < 0 + PLAYER_RADIUS)
-                team1[p].x = 0 + PLAYER_RADIUS;
-            if (team1[p].x > FIELD_WIDTH - PLAYER_RADIUS)
-                team1[p].x = FIELD_WIDTH - PLAYER_RADIUS;
+                team[p].vx += accel.x;
+                if (Math.abs(team[p].vx) > MAX_SPEED)
+                    team[p].vx = MAX_SPEED*team[p].vx/Math.abs(team[p].vx);
 
-            team1[p].y += team1[p].vy;
-            if (team1[p].y < 0 + PLAYER_RADIUS)
-                team1[p].y = 0 + PLAYER_RADIUS;
-            if (team1[p].y > FIELD_HEIGHT - PLAYER_RADIUS)
-                team1[p].y = FIELD_HEIGHT - PLAYER_RADIUS;
-
-            team1[p].vx += vector.x;
-            if (Math.abs(team1[p].vx) > MAX_SPEED)
-                team1[p].vx = MAX_SPEED*team1[p].vx/Math.abs(team1[p].vx);
-
-            team1[p].vy += vector.y;
-            if (Math.abs(team1[p].vy) > MAX_SPEED)
-                team1[p].vy = MAX_SPEED*team1[p].vy/Math.abs(team1[p].vy);
+                team[p].vy += accel.y;
+                if (Math.abs(team[p].vy) > MAX_SPEED)
+                    team[p].vy = MAX_SPEED*team[p].vy/Math.abs(team[p].vy);
+            }
         }
+        kinematics(team1);
+        kinematics(team2);
 
-        for (var p = 0; p < NUM_PLAYER; p++) {
-            var vector = team2[p].player.action(state);
+        // handle collisions
+        // ...
 
-            team2[p].x += team2[p].vx;
-            if (team2[p].x < 0 + PLAYER_RADIUS)
-                team2[p].x = 0 + PLAYER_RADIUS;
-            if (team2[p].x > FIELD_WIDTH - PLAYER_RADIUS)
-                team2[p].x = FIELD_WIDTH - PLAYER_RADIUS;
-
-            team2[p].y += team2[p].vy;
-            if (team2[p].y < 0 + PLAYER_RADIUS)
-                team2[p].y = 0 + PLAYER_RADIUS;
-            if (team2[p].y > FIELD_HEIGHT - PLAYER_RADIUS)
-                team2[p].y = FIELD_HEIGHT - PLAYER_RADIUS;
-
-            team2[p].vx += vector.x;
-            if (Math.abs(team2[p].vx) > MAX_SPEED)
-                team2[p].vx = MAX_SPEED*team2[p].vx/Math.abs(team2[p].vx);
-
-            team2[p].vy += vector.y;
-            if (Math.abs(team2[p].vy) > MAX_SPEED)
-                team2[p].vy = MAX_SPEED*team2[p].vy/Math.abs(team2[p].vy);
-        }
+        return;
     }
 
     var exports = {};
