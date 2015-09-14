@@ -31,5 +31,5 @@ on that competitor's team, and each instance is assigned an unique id.
 
 Every time the frame changes, each instance of the `Player` is examined and the 
 `player.action` method is called. State information containing the location of 
-the ball, other players, and the goals is provided, and either an acceleration 
-vector or a "kick" command should be returned in a reasonable amount of time.
+the ball, other players, and the goals is provided; an acceleration vector 
+should be returned.
