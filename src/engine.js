@@ -18,6 +18,7 @@
  * @author Kevin Zhang & Felipe Hofmann
  */
 function Engine() {
+    var IS_DONE = false;
     var NUM_PLAYER = 6;
     var LINE_WIDTH = 5;
     var GOAL_HEIGHT = 200;
@@ -40,6 +41,40 @@ function Engine() {
         
         ctx = cvs.getContext("2d");
         drawField();
+    }
+    
+    /**
+     * Create NUM_PLAYER instances of the Player function, and append each 
+     * instance to the team1 array. Each instances is placed at a random 
+     * location on team1's side of the field.
+     */
+    function setPlayer1(Player) {
+        for (var p = 0; p < NUM_PLAYER; p++) {
+            var player = new Player()
+            player.id = p;
+            team1.append({
+                x: Math.random() * FIELD_WIDTH/2,
+                y: Math.random() * FIELD_HEIGHT,
+                player
+            });
+        }
+    }
+    
+    /**
+     * Create NUM_PLAYER instances of the Player function, and append each 
+     * instance to the team2 array. Each instances is placed at a random 
+     * location on team2's side of the field.
+     */
+    function setPlayer2(Player) {
+        for (var p = 0; p < NUM_PLAYER; p++) {
+            var player = new Player()
+            player.id = p;
+            team2.append({
+                x: Math.random() * FIELD_WIDTH/2 + FIELD_WIDTH/2,
+                y: Math.random() * FIELD_HEIGHT,
+                player
+            });
+        }
     }
     
     function drawFrame() {
@@ -97,6 +132,8 @@ function Engine() {
 
     var exports = {};
     exports.setCanvas = setCanvas;
+    exports.setPlayer1 = setPlayer1;
+    exports.setPlayer2 = setPlayer2;
     exports.drawFrame = drawFrame;
     return exports;
 }

@@ -15,7 +15,7 @@
 
         function step(timestamp) {
             engine.drawFrame();
-            if (!engine.isDone())
+            if (!engine.IS_DONE)
                 window.requestAnimationFrame(step);
         }
         window.requestAnimationFrame(step);

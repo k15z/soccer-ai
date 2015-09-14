@@ -5,7 +5,7 @@ entirely in HTML5/CSS/JS, and can be run in any modern web browser.
 
 ## engine.js
 ```
-engine.isDone()
+engine.IS_DONE
 engine.drawFrame()
 engine.setCanvas(canvas)
 engine.setPlayer1(player)
@@ -21,14 +21,13 @@ the status of various robots on each team.
 ```
 player.id
 player.action(state)
-player.message(id, data)
+player.message(data)
 ```
 
 The other main component is the `player.js` file. Each competitor creates their 
 own `Player` object which gets loaded into the engine. Several instances of the 
 each competitors `Player` object are created by the engine, one for each player 
-on that competitor's team, and each instance is assigned an unique id. The id 
-can be used to send messages to other players on the team.
+on that competitor's team, and each instance is assigned an unique id.
 
 Every time the frame changes, each instance of the `Player` is examined and the 
 `player.action` method is called. State information containing the location of 
