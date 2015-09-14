@@ -5,8 +5,13 @@
     <script src="engine.js"></script>
     <script src="player.js"></script>
     <style>
+        body {
+            margin: 0px;
+            padding: 0px;
+            text-align: center;
+        }
         canvas {
-            max-width: 600px;
+            height: 100vh;
         }
     </style>
 </head>
@@ -20,7 +25,7 @@
 
         function step(timestamp) {
             engine.drawFrame();
-            if (!engine.IS_DONE)
+            if (!engine.isDone())
                 window.requestAnimationFrame(step);
         }
         window.requestAnimationFrame(step);

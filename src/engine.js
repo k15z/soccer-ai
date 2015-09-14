@@ -27,12 +27,22 @@ function Engine() {
     var FIELD_HEIGHT = 700;
     var PLAYER_RADIUS = 25;
     var SOCCER_RADIUS = 15;
+    var FRICTION_RATE = .99;
     
     var time = 0;
     var cvs = false;
     var ctx = false;
     var team1 = [], team2 = [];
-    var ball = {x: FIELD_WIDTH/2, y: FIELD_HEIGHT/2};
+    var ball = {
+        x: FIELD_WIDTH/2,
+        y: FIELD_HEIGHT/2,
+        vx: Math.random()*2 - 1,
+        vy: Math.random()*2 - 1
+    };
+
+    function isDone() {
+        return IS_DONE;
+    }
     
     /**
      * This function prepares the canvas by setting the width and height and 
@@ -92,7 +102,7 @@ function Engine() {
     function drawFrame() {
         var goal = updateView();
         var state = currentState(goal);
-        simulateStep(state);
+        simulateStep(goal, state);
         time++;
     }
     
@@ -174,6 +184,7 @@ function Engine() {
     function currentState(goal) {
         return {
             time: time,
+            ball: ball,
             goal: goal,
             team1: team1,
             team2: team2
@@ -184,9 +195,23 @@ function Engine() {
      * Call the action function on each player using the given state object.
      * Apply the returned acceleration vector.
      */
-    function simulateStep(state) {
+    function simulateStep(goal, state) {
         // calculate new location/velocity
         function kinematics(team) {
+            if (!team) {
+                ball.x += ball.vx;
+                ball.vx *= FRICTION_RATE;
+                if (ball.x < 0 + SOCCER_RADIUS || ball.x > FIELD_WIDTH - SOCCER_RADIUS)
+                    ball.vx = -ball.vx;
+
+                ball.y += ball.vy;
+                ball.vy *= FRICTION_RATE;
+                if (ball.y < 0 + SOCCER_RADIUS || ball.y > FIELD_HEIGHT - SOCCER_RADIUS)
+                    ball.vy = -ball.vy;
+
+                return;
+            }
+
             for (var p = 0; p < NUM_PLAYER; p++) {
                 var accel = team[p].player.action(state);
 
@@ -211,19 +236,50 @@ function Engine() {
                     team[p].vy = MAX_SPEED*team[p].vy/Math.abs(team[p].vy);
             }
         }
+        kinematics();
         kinematics(team1);
         kinematics(team2);
 
         // handle collisions
-        function collisions(ball, player) {
+        function collisions(ball, goal, player) {
+            for (var g = 0; g < goal.length; g++)
+                if (goal[g].x1 < ball.x && ball.x < goal[g].x2)
+                    if (goal[g].y1 < ball.y && ball.y < goal[g].y2)
+                        IS_DONE = true;
 
+            for (var p1 = 0; p1 < player.length; p1++) {
+                var distance = 0.0;
+                distance += (player[p1].x - ball.x) * (player[p1].x - ball.x);
+                distance += (player[p1].y - ball.y) * (player[p1].y - ball.y);
+                distance = Math.sqrt(distance);
+                if (distance < PLAYER_RADIUS + SOCCER_RADIUS) {
+                    ball.vx += player[p1].vx;
+                    ball.vy += player[p1].vy;
+                }
+
+                for (var p2 = p1; p2 < player.length; p2++) {
+                    if (p1 == p2)
+                        continue;
+                    var distance = 0.0;
+                    distance += (player[p1].x - player[p2].x) * (player[p1].x - player[p2].x);
+                    distance += (player[p1].y - player[p2].y) * (player[p1].y - player[p2].y);
+                    distance = Math.sqrt(distance);
+                    if (distance < PLAYER_RADIUS*2) {
+                        player[p1].vx = -player[p1].vx;
+                        player[p1].vy = -player[p1].vy;
+                        player[p2].vx = -player[p2].vx;
+                        player[p2].vy = -player[p2].vy;
+                    }
+                }
+            }
         }
-        collisions(ball, [].concat(team1).concat(team2));
+        collisions(ball, goal, [].concat(team1).concat(team2));
 
         return;
     }
 
     var exports = {};
+    exports.isDone = isDone;
     exports.setCanvas = setCanvas;
     exports.setPlayer1 = setPlayer1;
     exports.setPlayer2 = setPlayer2;
