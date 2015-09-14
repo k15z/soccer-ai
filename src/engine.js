@@ -19,14 +19,19 @@
  */
 function Engine() {
     var IS_DONE = false;
+    var MAX_SPEED = 2;
     var NUM_PLAYER = 6;
     var LINE_WIDTH = 5;
     var GOAL_HEIGHT = 200;
     var FIELD_WIDTH = 1100;
     var FIELD_HEIGHT = 700;
+    var PLAYER_RADIUS = 25;
     
-    var cvs = false, ctx = false;
-    var team1 = [], team2 = [];
+    var cvs = false;
+    var ctx = false;
+    var team1 = [];
+    var team2 = [];
+    var time = 0;
     
     /**
      * This function prepares the canvas by setting the width and height and 
@@ -36,11 +41,9 @@ function Engine() {
      */
     function setCanvas(canvas) {
         cvs = canvas;
+        ctx = cvs.getContext("2d");
         cvs.width = FIELD_WIDTH;
         cvs.height = FIELD_HEIGHT;
-        
-        ctx = cvs.getContext("2d");
-        drawField();
     }
     
     /**
@@ -52,10 +55,12 @@ function Engine() {
         for (var p = 0; p < NUM_PLAYER; p++) {
             var player = new Player()
             player.id = p;
-            team1.append({
-                x: Math.random() * FIELD_WIDTH/2,
-                y: Math.random() * FIELD_HEIGHT,
-                player
+            team1.push({
+                x: Math.random() * (FIELD_WIDTH/2 - 2*PLAYER_RADIUS) + PLAYER_RADIUS,
+                y: Math.random() * (FIELD_HEIGHT - 2*PLAYER_RADIUS) + PLAYER_RADIUS,
+                vx: 0,
+                vy: 0,
+                player: player
             });
         }
     }
@@ -69,21 +74,30 @@ function Engine() {
         for (var p = 0; p < NUM_PLAYER; p++) {
             var player = new Player()
             player.id = p;
-            team2.append({
-                x: Math.random() * FIELD_WIDTH/2 + FIELD_WIDTH/2,
-                y: Math.random() * FIELD_HEIGHT,
-                player
+            team2.push({
+                x: Math.random() * (FIELD_WIDTH/2 - 2*PLAYER_RADIUS) + FIELD_WIDTH/2 + PLAYER_RADIUS,
+                y: Math.random() * (FIELD_HEIGHT - 2*PLAYER_RADIUS) + PLAYER_RADIUS,
+                vx: 0,
+                vy: 0,
+                player: player
             });
         }
     }
     
+    /**
+     * Draws the field. Computes the state. Simulates a step. And increments
+     * the time.
+     */
     function drawFrame() {
         var goal = drawField();
+        var state = computeState(goal);
+        simulateStep(state);
+        time++;
     }
     
     /**
-     * This helper function draws the field, and more importantly, returns 
-     * an object containing the location of the goals.
+     * Draw the background, players, and goals. Return an object describing
+     * the location of the goals.
      */
     function drawField() {
         // fill background
@@ -109,6 +123,22 @@ function Engine() {
         ctx.strokeRect(0 - LINE_WIDTH, FIELD_HEIGHT/2 - GOAL_HEIGHT, GOAL_HEIGHT, GOAL_HEIGHT*2);
         ctx.strokeRect(FIELD_WIDTH - GOAL_HEIGHT + LINE_WIDTH, FIELD_HEIGHT/2 - GOAL_HEIGHT, GOAL_HEIGHT, GOAL_HEIGHT*2);
 
+        // draw players
+        ctx.fillStyle = "deepskyblue";
+        for (var p = 0; p < NUM_PLAYER; p++) {
+            ctx.beginPath();
+            ctx.arc(team1[p].x, team1[p].y, PLAYER_RADIUS, 0, Math.PI*2);
+            ctx.fill();
+            ctx.closePath();
+        }
+        ctx.fillStyle = "salmon";
+        for (var p = 0; p < NUM_PLAYER; p++) {
+            ctx.beginPath();
+            ctx.arc(team2[p].x, team2[p].y, PLAYER_RADIUS, 0, Math.PI*2);
+            ctx.fill();
+            ctx.closePath();
+        }
+
         // draw goals
         var goal = [
             {
@@ -129,6 +159,44 @@ function Engine() {
         ctx.fillRect(goal[1].x1, goal[1].y1, goal[1].x2 - goal[1].x1, goal[1].y2 - goal[1].y1);
         return goal;
     };
+
+    /**
+     * Compute the state of the game using the location of the goals.
+     */
+    function computeState(goal) {
+        return {
+            time: time
+        }
+    }
+
+    /**
+     * Call the action function on each player using the given state object.
+     * Apply the returned acceleration vector.
+     */
+    function simulateStep(state) {
+        for (var p = 0; p < NUM_PLAYER; p++) {
+            var vector = false;
+            vector = team1[p].player.action(state);
+            team1[p].x += team1[p].vx;
+            team1[p].y += team1[p].vy;
+            team1[p].vx += vector.x;
+            if (Math.abs(team1[p].vx) > MAX_SPEED)
+                team1[p].vx = MAX_SPEED*team1[p].vx/Math.abs(team1[p].vx);
+            team1[p].vy += vector.y;
+            if (Math.abs(team1[p].vy) > MAX_SPEED)
+                team1[p].vy = MAX_SPEED*team1[p].vy/Math.abs(team1[p].vy);
+
+            vector = team2[p].player.action(state);
+            team2[p].x += team2[p].vx;
+            team2[p].y += team2[p].vy;
+            team2[p].vx += vector.x;
+            if (Math.abs(team2[p].vx) > MAX_SPEED)
+                team2[p].vx = MAX_SPEED*team2[p].vx/Math.abs(team2[p].vx);
+            team2[p].vy += vector.y;
+            if (Math.abs(team2[p].vy) > MAX_SPEED)
+                team2[p].vy = MAX_SPEED*team2[p].vy/Math.abs(team2[p].vy);
+        }
+    }
 
     var exports = {};
     exports.setCanvas = setCanvas;
