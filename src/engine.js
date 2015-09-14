@@ -125,7 +125,7 @@ function Engine() {
         ctx.strokeRect(FIELD_WIDTH - GOAL_HEIGHT + LINE_WIDTH, FIELD_HEIGHT/2 - GOAL_HEIGHT, GOAL_HEIGHT, GOAL_HEIGHT*2);
 
         // draw ball
-        ctx.fillStyle = "black";
+        ctx.fillStyle = "white";
         ctx.beginPath();
             ctx.arc(ball.x, ball.y, SOCCER_RADIUS, 0, Math.PI*2);
             ctx.fill();
@@ -189,8 +189,18 @@ function Engine() {
         function kinematics(team) {
             for (var p = 0; p < NUM_PLAYER; p++) {
                 var accel = team[p].player.action(state);
+
                 team[p].x += team[p].vx;
+                if (team[p].x < 0 + PLAYER_RADIUS)
+                    team[p].x = 0 + PLAYER_RADIUS;
+                if (team[p].x > FIELD_WIDTH - PLAYER_RADIUS)
+                    team[p].x = FIELD_WIDTH - PLAYER_RADIUS;
+
                 team[p].y += team[p].vy;
+                if (team[p].y < 0 + PLAYER_RADIUS)
+                    team[p].y = 0 + PLAYER_RADIUS;
+                if (team[p].y > FIELD_HEIGHT - PLAYER_RADIUS)
+                    team[p].y = FIELD_HEIGHT - PLAYER_RADIUS;
 
                 team[p].vx += accel.x;
                 if (Math.abs(team[p].vx) > MAX_SPEED)
@@ -205,7 +215,10 @@ function Engine() {
         kinematics(team2);
 
         // handle collisions
-        // ...
+        function collisions(ball, player) {
+
+        }
+        collisions(ball, [].concat(team1).concat(team2));
 
         return;
     }
