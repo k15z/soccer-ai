@@ -1,6 +1,6 @@
 function Engine(canvas, Player1, Player2) {
     var FRICTION = 0.99;
-    var PLAYERS = 6, MAX_TIME = 999;
+    var PLAYERS = 6, MAX_TIME = 2000;
     var BOT_SPEED = 2, BALL_SPEED = 10;
     var BALL_RADIUS = 10, BOT_RADIUS = 15;
     var GOAL_WIDTH = 15, GOAL_HEIGHT = 150;
@@ -116,10 +116,14 @@ function Engine(canvas, Player1, Player2) {
                 if (goal2.y1 < ball.y && ball.y < goal2.y2)
                     winner = 1;
             
-            if (ball.x - 0 < BALL_RADIUS || FIELD_WIDTH - ball.x < BALL_RADIUS)
+            if (ball.x - 0 < BALL_RADIUS || FIELD_WIDTH - ball.x < BALL_RADIUS) {
                 ball.vx = -ball.vx;
-            if (ball.y - 0 < BALL_RADIUS || FIELD_HEIGHT - ball.y < BALL_RADIUS)
+                ball.x += 10*ball.vx;
+            }
+            if (ball.y - 0 < BALL_RADIUS || FIELD_HEIGHT - ball.y < BALL_RADIUS) {
                 ball.vy = -ball.vy;
+                ball.y += 10*ball.vy;
+            }
             
             if (Math.abs(ball.vx) > BALL_SPEED)
                 ball.vx = BALL_SPEED * ball.vx / Math.abs(ball.vx);
@@ -137,7 +141,7 @@ function Engine(canvas, Player1, Player2) {
                     var newVelX1 = (ball.vx * (BALL_RADIUS - BOT_RADIUS) + (2 * BOT_RADIUS * teams[i].vx)) / (BALL_RADIUS + BOT_RADIUS);
                     var newVelY1 = (ball.vy * (BALL_RADIUS - BOT_RADIUS) + (2 * BOT_RADIUS * teams[i].vy)) / (BALL_RADIUS + BOT_RADIUS);
                     ball.vx = 2*newVelX1; ball.vy = 2*newVelY1;
-                    ball.x += ball.vx; ball.y += ball.vy;
+                    ball.x += 5*ball.vx; ball.y += 5*ball.vy;
                 }
                 
                 for (var j = i; j < teams.length; j++) {
