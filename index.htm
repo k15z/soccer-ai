@@ -25,11 +25,13 @@
             <canvas id="field" class="u-full-width"></canvas>
         </main>
         <script>
+            var speed = 5;
             var canvas = document.getElementById('field');
             var engine = new Engine(canvas, Player, Player);
             
             function step() {
-                engine.step();
+                for (var s = 0; s < speed; s++)
+                    engine.step();
                 if (!engine.won())
                     window.requestAnimationFrame(step);
                 else
