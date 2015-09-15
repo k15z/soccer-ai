@@ -12,24 +12,37 @@
             body {background-color: #e9e6df; }
             header { margin-top: 10px; }
             small { font-size: 0.5em; }
+            main { position: relative; }
+            #speed { position: absolute; top: 5px; right: 5px;}
         </style>
     </head>
     <body class="container">
         <header class="row">
             <h1>
                 Soccer AI 
-                <small>created by Kevin Zhang &amp; Felipe Hofmann</small>
+                <small>by Kevin Zhang &amp; Felipe Hofmann</small>
             </h1>
         </header>
         <main class="row">
+            <input id="speed" type="range" min="0" max="5" value="1"></input>
             <canvas id="field" class="u-full-width"></canvas>
         </main>
         <script>
+            var speed = $('#speed').val();
+            if (sessionStorage.getItem('speed')) {
+                speed = sessionStorage.getItem('speed');
+                $('#speed').val(speed);
+            }
+            $('#speed').change(function() {
+                speed = $('#speed').val();
+                sessionStorage.setItem('speed', speed);
+            });
             var canvas = document.getElementById('field');
             var engine = new Engine(canvas, Player, Player);
             
             function step() {
-                engine.step();
+                for (var s = 0; s < speed; s++)
+                    engine.step();
                 if (!engine.won())
                     window.requestAnimationFrame(step);
                 else
