@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Soccer AI</title>
+        <link href="css/normalize.min.css" rel="stylesheet"/>
+        <link href="css/skeleton.min.css" rel="stylesheet"/>
+        <script src="js/jquery.js" type="text/javascript"></script>
+        <script src="js/engine.js" type="text/javascript"></script>
+        <script src="js/player.js" type="text/javascript"></script>
+        <style>
+            body {background-color: #e9e6df; }
+            header { margin-top: 10px; }
+            small { font-size: 0.5em; }
+        </style>
+    </head>
+    <body class="container">
+        <header class="row">
+            <h1>
+                Soccer AI 
+                <small>created by Kevin Zhang &amp; Felipe Hofmann</small>
+            </h1>
+        </header>
+        <main class="row">
+            <canvas id="field" class="u-full-width"></canvas>
+        </main>
+        <script>
+            var canvas = document.getElementById('field');
+            var engine = new Engine(canvas, Player, Player);
+            
+            function step() {
+                engine.step();
+                if (!engine.won())
+                    window.requestAnimationFrame(step);
+                else
+                    window.location.reload();
+            }
+            window.requestAnimationFrame(step);
+            
+            setTimeout(function() {
+                window.location.reload();
+            }, 15000);
+        </script>
+    </body>
+</html>
