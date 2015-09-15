@@ -1,12 +1,17 @@
 function Engine(canvas, Player1, Player2) {
-    var PLAYERS = 6, FRICTION = 0.99;
+    var FRICTION = 0.99;
+    var PLAYERS = 6, MAX_TIME = 999;
     var BOT_SPEED = 2, BALL_SPEED = 10;
     var BALL_RADIUS = 10, BOT_RADIUS = 15;
     var GOAL_WIDTH = 15, GOAL_HEIGHT = 150;
     var FIELD_WIDTH = 1100, FIELD_HEIGHT = 600;
     
     var winner = false;
-    function won() { return winner; }
+    function won() {
+        if (time > MAX_TIME)
+            return -1;
+        return winner;
+    }
     
     var time = 0;
     var ball = {
