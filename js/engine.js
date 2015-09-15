@@ -1,6 +1,6 @@
 function Engine(canvas, Player1, Player2) {
-    var NUM_PLAYERS = 6;
-    var FRICTION = 0.99, MAX_SPEED = 10;
+    var PLAYERS = 6, FRICTION = 0.99;
+    var BOT_SPEED = 2, BALL_SPEED = 10;
     var BALL_RADIUS = 10, BOT_RADIUS = 15;
     var GOAL_WIDTH = 15, GOAL_HEIGHT = 150;
     var FIELD_WIDTH = 1100, FIELD_HEIGHT = 600;
@@ -22,7 +22,7 @@ function Engine(canvas, Player1, Player2) {
         x2: FIELD_WIDTH - 2, y2: FIELD_HEIGHT/2 + GOAL_HEIGHT/2
     };
     var team1 = [], team2 = [];
-    for (var i = 0; i < NUM_PLAYERS; i++) {
+    for (var i = 0; i < PLAYERS; i++) {
         var player1 = Player1(1, i);
         team1.push({
             "x": Math.random() * (FIELD_WIDTH/2 - BOT_RADIUS*2) + BOT_RADIUS,
@@ -76,7 +76,7 @@ function Engine(canvas, Player1, Player2) {
                 ctx.fill();
             ctx.closePath();
             
-            for (var i = 0; i < NUM_PLAYERS; i++) {
+            for (var i = 0; i < PLAYERS; i++) {
                 ctx.beginPath();
                     ctx.fillStyle = "deepskyblue";
                     ctx.arc(team1[i].x, team1[i].y, BOT_RADIUS, 0, 2*Math.PI);
@@ -97,7 +97,7 @@ function Engine(canvas, Player1, Player2) {
             ball.vx *= FRICTION;
             ball.vy *= FRICTION;
             
-            for (var i = 0; i < NUM_PLAYERS; i++) {
+            for (var i = 0; i < PLAYERS; i++) {
                 team1[i].x += team1[i].vx;
                 team1[i].y += team1[i].vy;
                 team2[i].x += team2[i].vx;
@@ -116,10 +116,10 @@ function Engine(canvas, Player1, Player2) {
             if (ball.y - 0 < BALL_RADIUS || FIELD_HEIGHT - ball.y < BALL_RADIUS)
                 ball.vy = -ball.vy;
             
-            if (Math.abs(ball.vx) > MAX_SPEED)
-                ball.vx = MAX_SPEED * ball.vx / Math.abs(ball.vx);
-            if (Math.abs(ball.vy) > MAX_SPEED)
-                ball.vy = MAX_SPEED * ball.vy / Math.abs(ball.vy);
+            if (Math.abs(ball.vx) > BALL_SPEED)
+                ball.vx = BALL_SPEED * ball.vx / Math.abs(ball.vx);
+            if (Math.abs(ball.vy) > BALL_SPEED)
+                ball.vy = BALL_SPEED * ball.vy / Math.abs(ball.vy);
             
             var distance = 0.0;
             var teams = [].concat(team1).concat(team2);
@@ -172,11 +172,11 @@ function Engine(canvas, Player1, Player2) {
                 var state2 = $.extend({}, state, teams[i]);
                 var accel = teams[i].player.action(state2);
                 teams[i].vx += accel.ax;
-                if (Math.abs(teams[i].vx) > MAX_SPEED/5)
-                    teams[i].vx = (MAX_SPEED/5) * teams[i].vx / Math.abs(teams[i].vx);
+                if (Math.abs(teams[i].vx) > BOT_SPEED)
+                    teams[i].vx = (BOT_SPEED) * teams[i].vx / Math.abs(teams[i].vx);
                 teams[i].vy += accel.ay;
-                if (Math.abs(teams[i].vy) > MAX_SPEED/5)
-                    teams[i].vy = (MAX_SPEED/5) * teams[i].vy / Math.abs(teams[i].vy);
+                if (Math.abs(teams[i].vy) > BOT_SPEED)
+                    teams[i].vy = (BOT_SPEED) * teams[i].vy / Math.abs(teams[i].vy);
                 if (teams[i].x - BOT_RADIUS < 0)
                     teams[i].vx = 0;
                 if (teams[i].x > FIELD_WIDTH - BOT_RADIUS)
