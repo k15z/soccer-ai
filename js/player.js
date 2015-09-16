@@ -1,3 +1,9 @@
+/**
+ * This is a dummy Player constructor which demonstrates how to move the robot
+ * around by returning an acceleration vector from the "player.action(state)"
+ * function. This Player naively chases after the ball - but occasionally takes
+ * random detours.
+ */
 function Player(team, id) {
     var t = Math.random() * 10 + 10;
     var t_ax = Math.random() * 10 - 5;
