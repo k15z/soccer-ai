@@ -1,7 +1,19 @@
+/**
+ * The Engine object takes a HTML5 canvas and two Player constructors; it sets
+ * up the canvas to render the game, and steps forward by one frame every time
+ * the "engine.step()" function is called. The Player objects are expected to
+ * provide an "player.action(state)" function which returns that particular
+ * Player's desired acceleration vector. The "state" parameter passed to the
+ * player contains information about the location of various objects in the
+ * game which can be used to intelligently make decisions about how to move.
+ * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ * @author Kevin Zhang
+ * @version v0.1
+ */
 function Engine(canvas, Player1, Player2) {
     var FRICTION = 0.99;
     var PLAYERS = 6, MAX_TIME = 2000;
-    var BOT_SPEED = 2, BALL_SPEED = 10;
+    var BALL_SPEED = 10, BOT_SPEED = 2;
     var BALL_RADIUS = 10, BOT_RADIUS = 15;
     var GOAL_WIDTH = 15, GOAL_HEIGHT = 150;
     var FIELD_WIDTH = 1100, FIELD_HEIGHT = 600;
@@ -48,6 +60,7 @@ function Engine(canvas, Player1, Player2) {
     function step() {
         if (winner) return;
         
+        // graphics - draw on canvas
         (function(){
             ctx.beginPath();
                 ctx.fillStyle = "#009900";
@@ -96,6 +109,7 @@ function Engine(canvas, Player1, Player2) {
             }
         })();
         
+        // physics - many collisions
         (function() {
             ball.x += ball.vx;
             ball.y += ball.vy;
@@ -166,6 +180,7 @@ function Engine(canvas, Player1, Player2) {
             }
         })();
         
+        // robots - they are awesome
         (function() {
             var state = {
                 "time": time,

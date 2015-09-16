@@ -3,6 +3,7 @@
     <head>
         <title>Soccer AI</title>
         <meta name="viewport" content="width=device-width">
+        <link rel="icon" type="image/png" href="favicon.png" />
         <link href="css/normalize.min.css" rel="stylesheet"/>
         <link href="css/skeleton.min.css" rel="stylesheet"/>
         <script src="js/jquery.js" type="text/javascript"></script>
@@ -28,18 +29,22 @@
             <canvas id="field" class="u-full-width"></canvas>
         </main>
         <script>
+            // independent speed controller
             var speed = $('#speed').val();
-            if (sessionStorage.getItem('speed')) {
-                speed = sessionStorage.getItem('speed');
-                $('#speed').val(speed);
-            }
-            $('#speed').change(function() {
-                speed = $('#speed').val();
-                sessionStorage.setItem('speed', speed);
-            });
+            (function() {
+                if (sessionStorage.getItem('speed')) {
+                    speed = sessionStorage.getItem('speed');
+                    $('#speed').val(speed);
+                }
+                $('#speed').change(function() {
+                    speed = $('#speed').val();
+                    sessionStorage.setItem('speed', speed);
+                });
+            })();
+
+            // soccer-ai physics engine
             var canvas = document.getElementById('field');
             var engine = new Engine(canvas, Player, Player);
-            
             function step() {
                 for (var s = 0; s < speed; s++)
                     engine.step();
