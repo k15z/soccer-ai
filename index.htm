@@ -20,8 +20,7 @@
     <body class="container">
         <header class="row">
             <h1>
-                Soccer AI 
-                <small>by Kevin Zhang &amp; Felipe Hofmann</small>
+                Soccer AI
             </h1>
         </header>
         <main class="row">
@@ -30,6 +29,7 @@
         </main>
         <script>
             // independent speed controller
+            $('#speed').val(2);
             var speed = $('#speed').val();
             (function() {
                 if (sessionStorage.getItem('speed')) {
@@ -44,7 +44,7 @@
 
             // soccer-ai physics engine
             var canvas = document.getElementById('field');
-            var engine = new Engine(canvas, BasicPlayer, AdvancedPlayer);
+            var engine = new Engine(canvas, BasicPlayer, BasicPlayer);
             function step() {
                 for (var s = 0; s < speed; s++)
                     engine.step();
