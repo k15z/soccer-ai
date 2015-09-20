@@ -185,7 +185,7 @@ function Engine(canvas, Player1, Player2) {
             var state = {
                 "time": time,
                 "ball": ball,
-                "goal1": goal2,
+                "goal1": goal1,
                 "goal2": goal2,
                 "team1": team1,
                 "team2": team2
